@@ -1,22 +1,49 @@
+  
 import { useState } from 'react';
 import axios from 'axios';
 
-const handleSubmit = () => {
 
-}
+const Modal = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-const LoginForm = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    return (
-        <div className="wrapper">
-            <div className="form">
-                <h1 className="title">Chat Application</h1>
-                <form onSubmit={handleSubmit}></form>
-                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} className="input" placeholder="Username" required/>
-                <input type="text" value={password} onChange={(e) => setPassword(e.target.value)} className="input" placeholder="Password" required />
-            </div>
-        </div>
-    )
-}
+    const authObject = { 'Project-ID': '43c39cec-7e40-4d3e-ae1f-5e40e8197436', 'User-Name': username, 'User-Secret': password };
+
+    try {
+      await axios.get('https://api.chatengine.io/chats', { headers: authObject });
+
+      localStorage.setItem('username', username);
+      localStorage.setItem('password', password);
+
+      window.location.reload();
+      setError('');
+    } catch (error) {
+      setError('Oops, incorrect credentials.');
+    }
+  };
+
+  return (
+    <div className="wrapper">
+      <div className="form">
+        <h1 className="title">Chat Application</h1>
+        <form onSubmit={handleSubmit}>
+          <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} className="input" placeholder="Username" required />
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="input" placeholder="Password" required />
+          <div align="center">
+            <button type="submit" className="button">
+              <span>Start chatting</span>
+            </button>
+          </div>
+        </form>
+        <h1>{error}</h1>
+      </div>
+    </div>
+
+  );
+};
+
+export default Modal;
